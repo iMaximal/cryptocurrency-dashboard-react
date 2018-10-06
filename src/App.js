@@ -3,26 +3,37 @@ import styled from 'styled-components';
 
 import './App.css';
 
-const CustomElement = styled.div`
-  color: green;
-  font-size: 30px;
+const Logo = styled.div`
+  font-size: 1.5em;
 `;
 
-const BlueElement = CustomElement.extend`
-  color: blue;
+const ControlButton = styled.div`
+`;
+
+
+const AppLayout = styled.div`
+  display: grid;
+  grid-template-columns: 100px auto 100px 100px;
+  padding: 40px;
 `;
 
 class App extends Component {
   render() {
     return (
-      <>
-        <CustomElement>
-          Hello
-        </CustomElement>
-        <BlueElement>
-          Hello blue
-        </BlueElement>
-      </>
+      <AppLayout>
+        <Logo>
+          CryptoDash
+        </Logo>
+        <div>
+
+        </div>
+        <ControlButton>
+          Dashboard
+        </ControlButton>
+        <ControlButton>
+          Settings
+        </ControlButton>
+      </AppLayout>
     );
   }
 }
