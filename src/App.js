@@ -2,25 +2,9 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 
 import './App.css';
-
-const Logo = styled.div`
-  font-size: 1.5em;
-`;
-
-const ControlButton = styled.div`
-  cursor: pointer;
-  ${props => props.active && css`
-    text-shadow: 0px 0px 60px #03FF03
-  `}
-`;
+import AppBar from './AppBar';
 
 const AppLayout = styled.div`
-  padding: 40px;
-`;
-
-const Bar = styled.div`
-  display: grid;
-  grid-template-columns: 180px auto 100px 100px;
   padding: 40px;
 `;
 
@@ -90,30 +74,10 @@ class App extends Component {
 
     return (
       <AppLayout>
-        <Bar>
-          <Logo>
-            CryptoDash
-          </Logo>
-          <div>
-
-          </div>
-          {this.state.firstVisit
-          &&  <ControlButton
-            onClick={ () => this.changeActivePage('dashboard') }
-            active={ this.displayDashboard() }
-          >
-            Dashboard
-          </ControlButton>}
-          <ControlButton
-            onClick={ () => this.changeActivePage('settings') }
-            active={ this.displaySettings() }
-          >
-            Settings
-          </ControlButton>
-          <Content>
-            { this.displaySettings() && this.settingsContent() }
-          </Content>
-        </Bar>
+        {AppBar.call(this)}
+        <Content>
+          { this.displaySettings() && this.settingsContent() }
+        </Content>
       </AppLayout>
     );
   }
