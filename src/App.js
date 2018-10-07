@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import cc from 'cryptocompare';
-
+import _ from 'lodash';
 
 import './App.css';
 import AppBar from './AppBar';
@@ -14,6 +14,8 @@ const AppLayout = styled.div`
 const Content = styled.div`
   
 `;
+
+const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () => {
   const cryptoDashData = localStorage.getItem('cryptoDash');
@@ -29,8 +31,10 @@ const checkFirstVisit = () => {
 class App extends Component {
   state = {
     ...checkFirstVisit(),
+    favorites: ['ETH', 'BTC', 'DOGE', 'ZEC'],
     page: 'settings',
     coinList: {},
+    fetched: false,
   };
 
   componentDidMount() {
@@ -39,8 +43,11 @@ class App extends Component {
 
   fetchCoins = async () => {
     let coinList = (await cc.coinList()).Data;
-    this.setState({ coinList });
-  }
+    this.setState({
+      coinList,
+      fetched: true,
+    });
+  };
 
   displayDashboard = () => this.state.page === 'dashboard';
 
@@ -74,9 +81,9 @@ class App extends Component {
     if (!this.state.coinList) {
       return (
         <div>Loading Coins</div>
-      )
+      );
     }
-   };
+  };
 
   settingsContent = () => {
     return (
@@ -85,10 +92,30 @@ class App extends Component {
         <div onClick={ this.confirmFavorites }>
           Confirm Favorites
         </div>
-        {CoinList.call(this)}
+        { CoinList.call(this, true, this.state.fetched) }
+        { CoinList.call(this, false, this.state.fetched) }
       </div>
     );
 
+  };
+
+  isInFavorites = (key) => {
+    return _.includes(this.state.favorites, key);
+  };
+
+  addCoinToFavorites = (coinKey) => {
+    const favorites = [...this.state.favorites];
+    if (favorites.length < MAX_FAVORITES && !this.isInFavorites(coinKey)) {
+      favorites.push(coinKey);
+      this.setState({favorites});
+    }
+  };
+
+  removeCoinFromFavorites = (coinKey) => {
+    const favorites = [...this.state.favorites];
+    this.setState({
+      favorites: _.pull(favorites, coinKey),
+    });
   };
 
   render() {
