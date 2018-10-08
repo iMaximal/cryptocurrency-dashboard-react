@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import _ from 'lodash';
 
 import { subtleBoxShadow, lightBlueBackground, greenBoxShadow, redBoxShadow } from './style';
 
@@ -49,29 +50,34 @@ const DeleteIcon = styled.div`
 `;
 
 export default function (favorites = false, fetched) {
-  const coinKeys = favorites ? this.state.favorites : Object.keys(this.state.coinList).slice(0, 100);
+  const coinKeys = favorites
+    ? this.state.favorites
+    : (this.state.filteredCoins && Object.keys(this.state.filteredCoins)) ||
+    Object.keys(this.state.coinList).slice(0, 100);
   return (
     <CoinGrid>
       { coinKeys && coinKeys.map(coinKey => {
         return (
           fetched && <CoinTile
             key={ coinKey }
-            favorite={favorites}
+            favorite={ favorites }
             onClick={
               favorites
-              ? () => this.removeCoinFromFavorites(coinKey)
-              : () => this.addCoinToFavorites(coinKey)
+                ? () => this.removeCoinFromFavorites(coinKey)
+                : () => this.addCoinToFavorites(coinKey)
             }
-            chosen={this.isInFavorites(coinKey)}
+            chosen={ this.isInFavorites(coinKey) }
           >
             <CoinHeaderGrid>
               <div>{ this.state.coinList[coinKey].CoinName }</div>
-              {favorites
+              { favorites
                 ? <DeleteIcon>X</DeleteIcon>
-                : <CoinSymbol> { this.state.coinList[coinKey].Symbol }</CoinSymbol>}
+                : <CoinSymbol> { this.state.coinList[coinKey].Symbol }</CoinSymbol> }
             </CoinHeaderGrid>
             { <img style={ {height: '50px'} }
-                   src={ `http://cryptocompare.com/${this.state.coinList[coinKey].ImageUrl}` }/> }
+                   src={ `http://cryptocompare.com/${this.state.coinList[coinKey].ImageUrl}` }
+                   alt={ this.state.coinList[coinKey].CoinName }
+            /> }
           </CoinTile>
         );
       }) }
