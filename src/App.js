@@ -6,13 +6,19 @@ import _ from 'lodash';
 import './App.css';
 import AppBar from './AppBar';
 import CoinList from './CoinList';
+import Search from './Search';
+import { ConfirmButton } from './Button';
 
 const AppLayout = styled.div`
   padding: 40px;
 `;
 
 const Content = styled.div`
-  
+`;
+
+export const CenterDiv = styled.div`
+  display: grid;
+  justify-content: center;
 `;
 
 const MAX_FAVORITES = 10;
@@ -70,7 +76,9 @@ class App extends Component {
   };
 
   confirmFavorites = () => {
-    localStorage.setItem('cryptoDash', 'test');
+    localStorage.setItem('cryptoDash', JSON.stringify({
+      favorites: this.state.favorites,
+    }));
     this.setState({
       firstVisit: false,
       page: 'dashboard',
@@ -89,10 +97,13 @@ class App extends Component {
     return (
       <div>
         { this.firstVisitMessage() }
-        <div onClick={ this.confirmFavorites }>
-          Confirm Favorites
-        </div>
+        <CenterDiv>
+          <ConfirmButton onClick={ this.confirmFavorites }>
+            Confirm Favorites
+          </ConfirmButton>
+        </CenterDiv>
         { CoinList.call(this, true, this.state.fetched) }
+        { Search.call(this) }
         { CoinList.call(this, false, this.state.fetched) }
       </div>
     );
