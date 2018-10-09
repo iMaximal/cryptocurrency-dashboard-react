@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import cc from 'cryptocompare';
 import _ from 'lodash';
 import fuzzy from 'fuzzy';
+import moment from 'moment';
 
 import './App.css';
 import AppBar from './AppBar';
@@ -24,6 +25,7 @@ export const CenterDiv = styled.div`
 `;
 
 const MAX_FAVORITES = 10;
+const TIME_UNITS = 10;
 
 const checkFirstVisit = () => {
   let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
@@ -43,17 +45,23 @@ const checkFirstVisit = () => {
 class App extends Component {
   state = {
     favorites: ['ETH', 'BTC', 'DOGE', 'ZEC'],
-    ...checkFirstVisit(),
     page: 'dashboard',
     coinList: null,
     fetched: false,
     prices: null,
     currentFavorite: '',
+    historical: null,
+    timeInterval: 'months',
   };
 
   componentDidMount() {
-    this.fetchCoins();
-    this.fetchPrices();
+    this.setState({
+      ...checkFirstVisit()
+    }, () => {
+      this.fetchHistorical();
+      this.fetchCoins();
+      this.fetchPrices();
+    });
   }
 
   fetchCoins = async () => {
@@ -87,9 +95,44 @@ class App extends Component {
     return returnData;
   };
 
-  displayDashboard = () => this.state.page === 'dashboard';
+  fetchHistorical = async () => {
+    if (this.state.firstVisit) return;
+    let results = await this.historical();
+    let historical = [
+      {
+        name: this.state.currentFavorite,
+        data: results.map((ticker, index) => [
+          moment()
+            .subtract({[this.state.timeInterval]: TIME_UNITS - index})
+            .valueOf(),
+          ticker.USD
+        ])
+      }
+    ];
+    this.setState({historical});
+  };
 
-  displaySettings = () => this.state.page === 'settings';
+  historical = () => {
+    const {currentFavorite} = this.state;
+    let promises = [];
+    for (let units = TIME_UNITS; units > 0; units--) {
+      promises.push(
+        // fsym, tsyms, time, options
+        cc.priceHistorical(
+          currentFavorite,
+          ['USD'],
+          moment()
+            .subtract({[this.state.timeInterval]: units})
+            .toDate()
+        )
+      );
+    }
+    return Promise.all(promises);
+  };
+
+  displayingDashboard = () => this.state.page === 'dashboard';
+
+  displayingSettings = () => this.state.page === 'settings';
 
   changeActivePage = (name) => {
     this.setState({
@@ -119,6 +162,7 @@ class App extends Component {
       },
       () => {
         this.fetchPrices();
+        this.fetchHistorical();
       }
     );
     localStorage.setItem(
@@ -136,7 +180,7 @@ class App extends Component {
         <div>Loading Coins</div>
       );
     }
-    if (!this.state.prices) {
+    if (!this.state.firstVisit && !this.state.prices) {
       return (<div>Loading Prices</div>);
     }
   };
@@ -218,11 +262,12 @@ class App extends Component {
     return (
       <AppLayout>
         { AppBar.call(this) }
-        { this.loadingContent()
-        || <Content>
-          { this.displaySettings() && this.settingsContent() }
-          { this.displayDashboard() && fetched && Dashboard.call(this) }
-        </Content> }
+        { this.loadingContent() || (
+          <Content>
+            { this.displayingSettings() && this.settingsContent() }
+            { this.displayingDashboard() && fetched && Dashboard.call(this) }
+          </Content>
+        ) }
       </AppLayout>
     );
   }

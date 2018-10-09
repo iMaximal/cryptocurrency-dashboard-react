@@ -57,7 +57,7 @@ const ChartGrid = styled.div`
 
 export default function () {
   return [
-    <CoinGrid>
+    <CoinGrid key="coingrid">
       { this.state.prices.map((price, index) => {
         const sym = Object.keys(price)[0];
         const data = price[sym]['USD'];
@@ -66,7 +66,8 @@ export default function () {
           dashboardFavorite: sym === this.state.currentFavorite,
           onClick: () => {
             this.setState(
-              {currentFavorite: sym, historical: null},
+              { currentFavorite: sym, historical: null },
+              this.fetchHistorical
             );
             localStorage.setItem(
               'cryptoDash',
@@ -109,8 +110,8 @@ export default function () {
       }) }
     </CoinGrid>,
 
-    <ChartGrid key={ 'chartgrid' }>
-      { this.state.currentFavorite
+    <ChartGrid key="chartgrid">
+      { this.state.currentFavorite && this.state.historical
       && <>
         <PaddingBlue>
           <h2 style={ {textAlign: 'center'} }>
@@ -135,7 +136,11 @@ export default function () {
             <option value="weeks">Weeks</option>
             <option value="months">Months</option>
           </ChartSelect>
-          <ReactHighcharts config={ highchartsConfig.call(this) }/>
+          {this.state.historical ? (
+            <ReactHighcharts config={highchartsConfig.call(this)} />
+          ) : (
+            <div> Loading historical data </div>
+          )}
         </PaddingBlue>
       </>
       }
