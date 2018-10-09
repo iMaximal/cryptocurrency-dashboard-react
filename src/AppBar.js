@@ -27,7 +27,7 @@ export default function () {
       <div>
 
       </div>
-      { this.state.firstVisit
+      { !this.state.firstVisit
       && <ControlButton
         onClick={ () => this.changeActivePage('dashboard') }
         active={ this.displayDashboard() }

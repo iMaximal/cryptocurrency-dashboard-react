@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import cc from 'cryptocompare';
 import _ from 'lodash';
 import fuzzy from 'fuzzy';
@@ -8,6 +8,7 @@ import './App.css';
 import AppBar from './AppBar';
 import CoinList from './CoinList';
 import Search from './Search';
+import Dashboard from './Dashboard';
 import { ConfirmButton } from './Button';
 
 const AppLayout = styled.div`
@@ -25,27 +26,31 @@ export const CenterDiv = styled.div`
 const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () => {
-  const cryptoDashData = localStorage.getItem('cryptoDash');
+  const cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
   if (!cryptoDashData) {
     return {
       firstVisit: true,
       page: 'settings',
     };
   }
-  return {};
+  return {
+    favorites: cryptoDashData.favorites
+  };
 };
 
 class App extends Component {
   state = {
-    ...checkFirstVisit(),
     favorites: ['ETH', 'BTC', 'DOGE', 'ZEC'],
-    page: 'settings',
+    ...checkFirstVisit(),
+    page: 'dashboard',
     coinList: {},
     fetched: false,
+    prices: null,
   };
 
   componentDidMount() {
     this.fetchCoins();
+    this.fetchPrices();
   }
 
   fetchCoins = async () => {
@@ -55,6 +60,24 @@ class App extends Component {
       fetched: true,
     });
   };
+
+  fetchPrices = async () => {
+    let prices;
+    try {
+      prices = await this.prices();
+    } catch (e) {
+      this.setState({ error: true });
+    }
+    this.setState({ prices });
+  }
+
+  prices = () => {
+    let promises = [];
+    this.state.favorites.forEach(sym => {
+      promises.push(cc.priceFull(sym, 'USD'));
+    });
+    return Promise.all(promises);
+  }
 
   displayDashboard = () => this.state.page === 'dashboard';
 
@@ -83,7 +106,9 @@ class App extends Component {
     this.setState({
       firstVisit: false,
       page: 'dashboard',
+      prices: null,
     });
+    this.fetchPrices();
   };
 
   loadingContent = () => {
@@ -92,23 +117,28 @@ class App extends Component {
         <div>Loading Coins</div>
       );
     }
+    if(!this.state.prices) {
+      return (<div>Loading Prices</div>)
+    }
   };
 
   settingsContent = () => {
+    const { fetched } = this.state;
     return (
       <div>
-        { this.firstVisitMessage() }
-        <CenterDiv>
-          <ConfirmButton onClick={ this.confirmFavorites }>
-            Confirm Favorites
-          </ConfirmButton>
-        </CenterDiv>
-        { CoinList.call(this, true, this.state.fetched) }
-        { Search.call(this) }
-        { CoinList.call(this, false, this.state.fetched) }
+        {this.firstVisitMessage()}
+        <div>
+          {CoinList.call(this, true, fetched)}
+          <CenterDiv>
+            <ConfirmButton onClick={this.confirmFavorites}>
+              Confirm Favorites
+            </ConfirmButton>
+          </CenterDiv>
+          {Search.call(this)}
+          {CoinList.call(this, false, fetched)}
+        </div>
       </div>
     );
-
   };
 
   isInFavorites = (key) => {
@@ -171,6 +201,7 @@ class App extends Component {
         { AppBar.call(this) }
         { this.loadingContent() || <Content>
           { this.displaySettings() && this.settingsContent() }
+          { this.displayDashboard() && Dashboard.call(this) }
         </Content> }
       </AppLayout>
     );

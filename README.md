@@ -1,6 +1,8 @@
-# Study project
+# Cryptocurrency Dashboard
 
-This code example is not best practice.
+## Study project
+
+This code example from author of Udemy course is not best practice.
 
 Don't use it on production.
 
