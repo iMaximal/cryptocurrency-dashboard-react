@@ -1,8 +1,13 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import ReactHighcharts from 'react-highcharts';
 
 import { CoinTile, CoinGrid, CoinHeaderGrid, CoinSymbol } from './CoinList';
-import { fontSizeBig, fontSize3, subtleBoxShadow, lightBlueBackground } from './style';
+import { fontSizeBig, fontSize3, subtleBoxShadow, lightBlueBackground, backgroundColor2, fontSize2 } from './style';
+import highchartsConfig from './HighchartsConfig';
+import theme from './HighchartsTheme';
+
+ReactHighcharts.Highcharts.setOptions(theme);
 
 const numberFormat = (number) => {
   return +(number + '').slice(0, 7);
@@ -13,6 +18,16 @@ const ChangePct = styled.div`
   ${props => props.red && css`
     color: red;
   `}
+`;
+
+const ChartSelect = styled.select`
+  ${backgroundColor2} 
+  color: #1163c9;
+  border: 1px solid;
+  ${fontSize2} 
+  margin: 5px;
+  height: 25px;
+  float: right;
 `;
 
 const TickerPrice = styled.div`
@@ -93,20 +108,37 @@ export default function () {
         );
       }) }
     </CoinGrid>,
+
     <ChartGrid key={ 'chartgrid' }>
       { this.state.currentFavorite
-      && <PaddingBlue>
-        <h2 style={ {textAlign: 'center'} }>
-          { this.state.coinList[this.state.currentFavorite].CoinName }
-        </h2>
-        <img
-          alt={ this.state.currentFavorite }
-          style={ {height: '200px', display: 'block', margin: 'auto'} }
-          src={ `http://cryptocompare.com/${
-            this.state.coinList[this.state.currentFavorite].ImageUrl
-            }` }
-        />
-      </PaddingBlue> }
+      && <>
+        <PaddingBlue>
+          <h2 style={ {textAlign: 'center'} }>
+            { this.state.coinList[this.state.currentFavorite].CoinName }
+          </h2>
+          <img
+            alt={ this.state.currentFavorite }
+            style={ {height: '200px', display: 'block', margin: 'auto'} }
+            src={ `http://cryptocompare.com/${
+              this.state.coinList[this.state.currentFavorite].ImageUrl
+              }` }
+          />
+        </PaddingBlue>
+        <PaddingBlue>
+          <ChartSelect
+            defaultValue={ 'months' }
+            onChange={ e => {
+              this.setState({timeInterval: e.target.value, historical: null}, this.fetchHistorical);
+            } }
+          >
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+            <option value="months">Months</option>
+          </ChartSelect>
+          <ReactHighcharts config={ highchartsConfig.call(this) }/>
+        </PaddingBlue>
+      </>
+      }
     </ChartGrid>
   ];
 }
