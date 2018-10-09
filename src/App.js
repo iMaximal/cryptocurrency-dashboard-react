@@ -26,15 +26,17 @@ export const CenterDiv = styled.div`
 const MAX_FAVORITES = 10;
 
 const checkFirstVisit = () => {
-  const cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
+  let cryptoDashData = JSON.parse(localStorage.getItem('cryptoDash'));
   if (!cryptoDashData) {
     return {
       firstVisit: true,
-      page: 'settings',
+      page: 'settings'
     };
   }
+  const {favorites, currentFavorite} = cryptoDashData;
   return {
-    favorites: cryptoDashData.favorites
+    favorites,
+    currentFavorite
   };
 };
 
@@ -43,9 +45,10 @@ class App extends Component {
     favorites: ['ETH', 'BTC', 'DOGE', 'ZEC'],
     ...checkFirstVisit(),
     page: 'dashboard',
-    coinList: {},
+    coinList: null,
     fetched: false,
     prices: null,
+    currentFavorite: '',
   };
 
   componentDidMount() {
@@ -66,18 +69,23 @@ class App extends Component {
     try {
       prices = await this.prices();
     } catch (e) {
-      this.setState({ error: true });
+      this.setState({error: true});
     }
-    this.setState({ prices });
-  }
+    this.setState({prices});
+  };
 
-  prices = () => {
-    let promises = [];
-    this.state.favorites.forEach(sym => {
-      promises.push(cc.priceFull(sym, 'USD'));
-    });
-    return Promise.all(promises);
-  }
+  prices = async () => {
+    let returnData = [];
+    for (let i = 0; i < this.state.favorites.length; i++) {
+      try {
+        let priceData = await cc.priceFull(this.state.favorites[i], 'USD');
+        returnData.push(priceData);
+      } catch (e) {
+        console.warn('Fetch price error: ', e);
+      }
+    }
+    return returnData;
+  };
 
   displayDashboard = () => this.state.page === 'dashboard';
 
@@ -100,15 +108,26 @@ class App extends Component {
   };
 
   confirmFavorites = () => {
-    localStorage.setItem('cryptoDash', JSON.stringify({
-      favorites: this.state.favorites,
-    }));
-    this.setState({
-      firstVisit: false,
-      page: 'dashboard',
-      prices: null,
-    });
-    this.fetchPrices();
+    let currentFavorite = this.state.favorites[0];
+    this.setState(
+      {
+        firstVisit: false,
+        page: 'dashboard',
+        prices: null,
+        currentFavorite,
+        historical: null
+      },
+      () => {
+        this.fetchPrices();
+      }
+    );
+    localStorage.setItem(
+      'cryptoDash',
+      JSON.stringify({
+        favorites: this.state.favorites,
+        currentFavorite
+      })
+    );
   };
 
   loadingContent = () => {
@@ -117,25 +136,25 @@ class App extends Component {
         <div>Loading Coins</div>
       );
     }
-    if(!this.state.prices) {
-      return (<div>Loading Prices</div>)
+    if (!this.state.prices) {
+      return (<div>Loading Prices</div>);
     }
   };
 
   settingsContent = () => {
-    const { fetched } = this.state;
+    const {fetched} = this.state;
     return (
       <div>
-        {this.firstVisitMessage()}
+        { this.firstVisitMessage() }
         <div>
-          {CoinList.call(this, true, fetched)}
+          { CoinList.call(this, true, fetched) }
           <CenterDiv>
-            <ConfirmButton onClick={this.confirmFavorites}>
+            <ConfirmButton onClick={ this.confirmFavorites }>
               Confirm Favorites
             </ConfirmButton>
           </CenterDiv>
-          {Search.call(this)}
-          {CoinList.call(this, false, fetched)}
+          { Search.call(this) }
+          { CoinList.call(this, false, fetched) }
         </div>
       </div>
     );
@@ -179,7 +198,7 @@ class App extends Component {
       );
     });
 
-    this.setState({ filteredCoins });
+    this.setState({filteredCoins});
   }, 500);
 
   filterCoins = (e) => {
@@ -194,14 +213,15 @@ class App extends Component {
   };
 
   render() {
-    const {page} = this.state;
+    const {fetched, page} = this.state;
 
     return (
       <AppLayout>
         { AppBar.call(this) }
-        { this.loadingContent() || <Content>
+        { this.loadingContent()
+        || <Content>
           { this.displaySettings() && this.settingsContent() }
-          { this.displayDashboard() && Dashboard.call(this) }
+          { this.displayDashboard() && fetched && Dashboard.call(this) }
         </Content> }
       </AppLayout>
     );
