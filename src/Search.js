@@ -19,12 +19,12 @@ const SearchInput = styled.input`
   place-self: center left; 
 `;
 
-export default function () {
+export default function (props) {
   return (
     <SearchContainer>
       <h2>Search all coins</h2>
       <SearchInput
-        onKeyUp={this.filterCoins}
+        onKeyUp={props.onFilterCoins}
       />
     </SearchContainer>);
 }

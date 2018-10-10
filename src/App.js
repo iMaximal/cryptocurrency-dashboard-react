@@ -214,7 +214,9 @@ class App extends Component {
               Confirm Favorites
             </ConfirmButton>
           </CenterDiv>
-          { Search.call(this) }
+          <Search
+            onFilterCoins={this.filterCoins}
+          />
           <CoinList
             coinList={ coinList }
             favorites={ favorites }
