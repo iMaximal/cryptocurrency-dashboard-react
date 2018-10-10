@@ -61,34 +61,36 @@ const DeleteIcon = styled.div`
   }
 `;
 
-export default function (favorites = false, fetched) {
-  const coinKeys = favorites
-    ? this.state.favorites
-    : (this.state.filteredCoins && Object.keys(this.state.filteredCoins)) ||
-    Object.keys(this.state.coinList).slice(0, 100);
+export default function (props) {
+  const {coinList, favorites, fetched, filteredCoins, showFavorites} = props;
+
+  const coinKeys = showFavorites
+    ? favorites
+    : (filteredCoins && Object.keys(filteredCoins)) ||
+    Object.keys(coinList).slice(0, 100);
   return (
-    <CoinGrid count={favorites && this.state.favorites.length}>
+    <CoinGrid count={ showFavorites && favorites.length }>
       { coinKeys && coinKeys.map(coinKey => {
         return (
           fetched && <CoinTile
             key={ coinKey }
-            favorite={ favorites }
+            favorite={ showFavorites }
             onClick={
-              favorites
-                ? () => this.removeCoinFromFavorites(coinKey)
-                : () => this.addCoinToFavorites(coinKey)
+              showFavorites
+                ? () => props.onRemoveCoinFromFavorites(coinKey)
+                : () => props.onAddCoinToFavorites(coinKey)
             }
-            chosen={ this.isInFavorites(coinKey) }
+            chosen={ props.onIsInFavorites(coinKey) }
           >
             <CoinHeaderGrid>
-              <div>{ this.state.coinList[coinKey].CoinName }</div>
-              { favorites
+              <div>{ coinList[coinKey].CoinName }</div>
+              { showFavorites
                 ? <DeleteIcon>X</DeleteIcon>
-                : <CoinSymbol> { this.state.coinList[coinKey].Symbol }</CoinSymbol> }
+                : <CoinSymbol> { coinList[coinKey].Symbol }</CoinSymbol> }
             </CoinHeaderGrid>
             { <img style={ {height: '50px'} }
-                   src={ `http://cryptocompare.com/${this.state.coinList[coinKey].ImageUrl}` }
-                   alt={ this.state.coinList[coinKey].CoinName }
+                   src={ `http://cryptocompare.com/${coinList[coinKey].ImageUrl}` }
+                   alt={ coinList[coinKey].CoinName }
             /> }
           </CoinTile>
         );

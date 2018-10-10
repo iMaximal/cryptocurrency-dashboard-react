@@ -194,19 +194,37 @@ class App extends Component {
   };
 
   settingsContent = () => {
-    const {fetched} = this.state;
+    const { coinList, favorites, fetched, filteredCoins} = this.state;
     return (
       <div>
         { this.firstVisitMessage() }
         <div>
-          { CoinList.call(this, true, fetched) }
+          <CoinList
+            coinList={coinList}
+            favorites={favorites}
+            showFavorites={true}
+            fetched={fetched}
+            filteredCoins={filteredCoins}
+            onRemoveCoinFromFavorites={this.removeCoinFromFavorites}
+            onAddCoinToFavorites={this.addCoinToFavorites}
+            onIsInFavorites={this.isInFavorites}
+          />
           <CenterDiv>
             <ConfirmButton onClick={ this.confirmFavorites }>
               Confirm Favorites
             </ConfirmButton>
           </CenterDiv>
           { Search.call(this) }
-          { CoinList.call(this, false, fetched) }
+          <CoinList
+            coinList={coinList}
+            favorites={favorites}
+            showFavorites={false}
+            fetched={fetched}
+            filteredCoins={filteredCoins}
+            onRemoveCoinFromFavorites={this.removeCoinFromFavorites}
+            onAddCoinToFavorites={this.addCoinToFavorites}
+            onIsInFavorites={this.isInFavorites}
+          />
         </div>
       </div>
     );
@@ -277,9 +295,9 @@ class App extends Component {
       <AppLayout>
         <AppBar
           firstVisit={ firstVisit }
-          onChangeActivePage={this.changeActivePage}
-          onDisplaingDashboard={this.displayingDashboard}
-          onDisplaingSettings={this.displayingSettings}
+          onChangeActivePage={ this.changeActivePage }
+          onDisplaingDashboard={ this.displayingDashboard }
+          onDisplaingSettings={ this.displayingSettings }
         />
         { this.loadingContent() || (
           <Content>
