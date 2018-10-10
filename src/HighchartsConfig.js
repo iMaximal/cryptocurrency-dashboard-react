@@ -1,4 +1,4 @@
-export default function() {
+export default function(historical) {
   return {
     title: {
       text: ''
@@ -32,7 +32,7 @@ export default function() {
       }
     },
 
-    series: this.state.historical,
+    series: historical,
 
     responsive: {
       rules: [

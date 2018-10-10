@@ -55,28 +55,17 @@ const ChartGrid = styled.div`
   grid-template-columns: 1fr 3fr;
 `;
 
-export default function () {
+export default function (props) {
+  const { coinList, currentFavorite, historical, prices, timeInterval } = props;
   return [
     <CoinGrid key="coingrid">
-      { this.state.prices.map((price, index) => {
+      { prices.map((price, index) => {
         const sym = Object.keys(price)[0];
         const data = price[sym]['USD'];
         let tileProps = {
           key: sym,
-          dashboardFavorite: sym === this.state.currentFavorite,
-          onClick: () => {
-            this.setState(
-              {currentFavorite: sym, historical: null},
-              this.fetchHistorical
-            );
-            localStorage.setItem(
-              'cryptoDash',
-              JSON.stringify({
-                ...JSON.parse(localStorage.getItem('cryptoDash')),
-                currentFavorite: sym
-              })
-            );
-          }
+          dashboardFavorite: sym === currentFavorite,
+          onClick: () => props.onAskHistoricalData(sym)
         };
 
         return index < 5 ? (
@@ -111,36 +100,31 @@ export default function () {
     </CoinGrid>,
 
     <ChartGrid key="chartgrid">
-      { this.state.currentFavorite && this.state.historical
+      { currentFavorite && historical
       && <>
         <PaddingBlue>
           <h2 style={ {textAlign: 'center'} }>
-            { this.state.coinList[this.state.currentFavorite].CoinName }
+            { coinList[currentFavorite].CoinName }
           </h2>
           <img
-            alt={ this.state.currentFavorite }
+            alt={ currentFavorite }
             style={ {height: '200px', display: 'block', margin: 'auto'} }
             src={ `http://cryptocompare.com/${
-              this.state.coinList[this.state.currentFavorite].ImageUrl
+              coinList[currentFavorite].ImageUrl
               }` }
           />
         </PaddingBlue>
         <PaddingBlue>
           <ChartSelect
-            defaultValue="months"
-            onChange={ e => {
-              this.setState({
-                timeInterval: e.target.value,
-                historical: null}, this.fetchHistorical
-              );
-            } }
+            defaultValue={timeInterval}
+            onChange={ e => props.onGetTimeSeries(e) }
           >
             <option value="days">Days</option>
             <option value="weeks">Weeks</option>
             <option value="months">Months</option>
           </ChartSelect>
-          { this.state.historical ? (
-            <ReactHighcharts config={ highchartsConfig.call(this) }/>
+          { historical ? (
+            <ReactHighcharts config={ highchartsConfig.call(this, historical) }/>
           ) : (
             <div> Loading historical data </div>
           ) }

@@ -194,20 +194,20 @@ class App extends Component {
   };
 
   settingsContent = () => {
-    const { coinList, favorites, fetched, filteredCoins} = this.state;
+    const {coinList, favorites, fetched, filteredCoins} = this.state;
     return (
       <div>
         { this.firstVisitMessage() }
         <div>
           <CoinList
-            coinList={coinList}
-            favorites={favorites}
-            showFavorites={true}
-            fetched={fetched}
-            filteredCoins={filteredCoins}
-            onRemoveCoinFromFavorites={this.removeCoinFromFavorites}
-            onAddCoinToFavorites={this.addCoinToFavorites}
-            onIsInFavorites={this.isInFavorites}
+            coinList={ coinList }
+            favorites={ favorites }
+            showFavorites={ true }
+            fetched={ fetched }
+            filteredCoins={ filteredCoins }
+            onRemoveCoinFromFavorites={ this.removeCoinFromFavorites }
+            onAddCoinToFavorites={ this.addCoinToFavorites }
+            onIsInFavorites={ this.isInFavorites }
           />
           <CenterDiv>
             <ConfirmButton onClick={ this.confirmFavorites }>
@@ -216,14 +216,14 @@ class App extends Component {
           </CenterDiv>
           { Search.call(this) }
           <CoinList
-            coinList={coinList}
-            favorites={favorites}
-            showFavorites={false}
-            fetched={fetched}
-            filteredCoins={filteredCoins}
-            onRemoveCoinFromFavorites={this.removeCoinFromFavorites}
-            onAddCoinToFavorites={this.addCoinToFavorites}
-            onIsInFavorites={this.isInFavorites}
+            coinList={ coinList }
+            favorites={ favorites }
+            showFavorites={ false }
+            fetched={ fetched }
+            filteredCoins={ filteredCoins }
+            onRemoveCoinFromFavorites={ this.removeCoinFromFavorites }
+            onAddCoinToFavorites={ this.addCoinToFavorites }
+            onIsInFavorites={ this.isInFavorites }
           />
         </div>
       </div>
@@ -288,8 +288,39 @@ class App extends Component {
     });
   };
 
+  askHistoricalData = (sym) => {
+    this.setState({
+        currentFavorite: sym,
+        historical: null
+      },
+      this.fetchHistorical
+    );
+    localStorage.setItem(
+      'cryptoDash',
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem('cryptoDash')),
+        currentFavorite: sym
+      })
+    );
+  };
+
+  getTimeSeries = (event) => {
+    this.setState({
+      timeInterval: event.target.value,
+      historical: null}, this.fetchHistorical
+    );
+  };
+
   render() {
-    const {firstVisit, fetched} = this.state;
+    const {
+      coinList,
+      currentFavorite,
+      firstVisit,
+      fetched,
+      historical,
+      prices,
+      timeInterval,
+    } = this.state;
 
     return (
       <AppLayout>
@@ -302,7 +333,17 @@ class App extends Component {
         { this.loadingContent() || (
           <Content>
             { this.displayingSettings() && this.settingsContent() }
-            { this.displayingDashboard() && fetched && Dashboard.call(this) }
+            { this.displayingDashboard()
+            && fetched
+            && <Dashboard
+              prices={ prices }
+              onAskHistoricalData={this.askHistoricalData}
+              coinList={coinList}
+              currentFavorite={currentFavorite}
+              historical={historical}
+              onGetTimeSeries={this.getTimeSeries}
+              timeInterval={timeInterval}
+            /> }
           </Content>
         ) }
       </AppLayout>
