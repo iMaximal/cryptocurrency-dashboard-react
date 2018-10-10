@@ -86,7 +86,7 @@ class App extends Component {
   fetchPrices = async () => {
     if (this.state.firstVisit) return;
     let prices = await this.prices();
-    this.setState({ prices });
+    this.setState({prices});
   };
 
   prices = async () => {
@@ -264,12 +264,23 @@ class App extends Component {
     this.handleFilter(inputValue);
   };
 
+  changeActivePage = (name) => {
+    this.setState({
+      page: name,
+    });
+  };
+
   render() {
-    const { fetched } = this.state;
+    const {firstVisit, fetched} = this.state;
 
     return (
       <AppLayout>
-        { AppBar.call(this) }
+        <AppBar
+          firstVisit={ firstVisit }
+          onChangeActivePage={this.changeActivePage}
+          onDisplaingDashboard={this.displayingDashboard}
+          onDisplaingSettings={this.displayingSettings}
+        />
         { this.loadingContent() || (
           <Content>
             { this.displayingSettings() && this.settingsContent() }

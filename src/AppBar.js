@@ -20,26 +20,26 @@ const Bar = styled.div`
   grid-template-columns: 180px auto 100px 100px;
 `;
 
-export default function() {
+export default function(props) {
   return (
     <Bar>
       <Logo>CryptoDash</Logo>
       <div />
-      {!this.state.firstVisit && (
+      {!props.firstVisit && (
         <ControlButton
           onClick={() => {
-            this.setState({ page: 'dashboard' });
+            props.onChangeActivePage('dashboard');
           }}
-          active={this.displayingDashboard()}
+          active={props.onDisplaingDashboard()}
         >
           Dashboard
         </ControlButton>
       )}
       <ControlButton
         onClick={() => {
-          this.setState({ page: 'settings' });
+          props.onChangeActivePage('settings');
         }}
-        active={this.displayingSettings()}
+        active={props.onDisplaingSettings()}
       >
         Settings
       </ControlButton>
