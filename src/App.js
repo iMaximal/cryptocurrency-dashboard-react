@@ -265,7 +265,7 @@ class App extends Component {
   };
 
   render() {
-    const {fetched, page} = this.state;
+    const { fetched } = this.state;
 
     return (
       <AppLayout>

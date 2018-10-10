@@ -34,7 +34,7 @@ const TickerPrice = styled.div`
   ${fontSizeBig};
 `;
 
-const CoinTileCompact = CoinTile.extend`
+const CoinTileCompact = styled(CoinTile)`
   ${fontSize3} 
   display: grid;
   grid-gap: 5px;
@@ -127,7 +127,7 @@ export default function () {
         </PaddingBlue>
         <PaddingBlue>
           <ChartSelect
-            defaultValue={ 'months' }
+            defaultValue="months"
             onChange={ e => {
               this.setState({
                 timeInterval: e.target.value,
