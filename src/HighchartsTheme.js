@@ -1,20 +1,26 @@
+import {lightTheme} from './style';
+
 export default {
-  colors: ['#DDDF0D', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee',
-    '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+  lang: {
+    thousandsSep: ','
+  },
+  colors: [
+    '#61d936',
+    '#552ccb',
+    '#1163c9',
+    '#04A1EE',
+    '#08C6E0',
+    '#146B9E',
+    '#F376C1',
+    '#1B2839'
+  ],
   chart: {
-    backgroundColor: {
-      linearGradient: {x1: 0, y1: 0, x2: 1, y2: 1},
-      stops: [
-        [0, 'rgb(48, 48, 96)'],
-        [1, 'rgb(0, 0, 0)']
-      ]
-    },
+    backgroundColor: lightTheme ? 'white': '#061a44',
     borderColor: '#000000',
-    borderWidth: 2,
+    borderWidth: 0,
     className: 'dark-container',
-    plotBackgroundColor: 'rgba(255, 255, 255, .1)',
-    plotBorderColor: '#CCCCCC',
-    plotBorderWidth: 1
+    plotBackgroundColor: lightTheme ? 'white': '#061a44',
+    plotBorderWidth: 0
   },
   title: {
     style: {
@@ -30,7 +36,7 @@ export default {
   },
   xAxis: {
     gridLineColor: '#333333',
-    gridLineWidth: 1,
+    gridLineWidth: 0,
     labels: {
       style: {
         color: '#A0A0A0'
@@ -44,11 +50,11 @@ export default {
         fontWeight: 'bold',
         fontSize: '12px',
         fontFamily: 'Trebuchet MS, Verdana, sans-serif'
-
       }
     }
   },
   yAxis: {
+    gridLineWidth: 0,
     gridLineColor: '#333333',
     labels: {
       style: {
@@ -131,11 +137,8 @@ export default {
       hoverSymbolStroke: '#FFFFFF',
       theme: {
         fill: {
-          linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-          stops: [
-            [0.4, '#606060'],
-            [0.6, '#333333']
-          ]
+          linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+          stops: [[0.4, '#606060'], [0.6, '#333333']]
         },
         stroke: '#000000'
       }
@@ -146,11 +149,8 @@ export default {
   rangeSelector: {
     buttonTheme: {
       fill: {
-        linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-        stops: [
-          [0.4, '#888'],
-          [0.6, '#555']
-        ]
+        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+        stops: [[0.4, '#888'], [0.6, '#555']]
       },
       stroke: '#000000',
       style: {
@@ -160,11 +160,8 @@ export default {
       states: {
         hover: {
           fill: {
-            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-            stops: [
-              [0.4, '#BBB'],
-              [0.6, '#888']
-            ]
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [[0.4, '#BBB'], [0.6, '#888']]
           },
           stroke: '#000000',
           style: {
@@ -173,11 +170,8 @@ export default {
         },
         select: {
           fill: {
-            linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-            stops: [
-              [0.1, '#000'],
-              [0.3, '#333']
-            ]
+            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+            stops: [[0.1, '#000'], [0.3, '#333']]
           },
           stroke: '#000000',
           style: {
@@ -210,29 +204,20 @@ export default {
 
   scrollbar: {
     barBackgroundColor: {
-      linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-      stops: [
-        [0.4, '#888'],
-        [0.6, '#555']
-      ]
+      linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      stops: [[0.4, '#888'], [0.6, '#555']]
     },
     barBorderColor: '#CCC',
     buttonArrowColor: '#CCC',
     buttonBackgroundColor: {
-      linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-      stops: [
-        [0.4, '#888'],
-        [0.6, '#555']
-      ]
+      linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      stops: [[0.4, '#888'], [0.6, '#555']]
     },
     buttonBorderColor: '#CCC',
     rifleColor: '#FFF',
     trackBackgroundColor: {
-      linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
-      stops: [
-        [0, '#000'],
-        [1, '#333']
-      ]
+      linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+      stops: [[0, '#000'], [1, '#333']]
     },
     trackBorderColor: '#666'
   },
