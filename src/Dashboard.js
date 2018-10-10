@@ -66,7 +66,7 @@ export default function () {
           dashboardFavorite: sym === this.state.currentFavorite,
           onClick: () => {
             this.setState(
-              { currentFavorite: sym, historical: null },
+              {currentFavorite: sym, historical: null},
               this.fetchHistorical
             );
             localStorage.setItem(
@@ -129,18 +129,21 @@ export default function () {
           <ChartSelect
             defaultValue={ 'months' }
             onChange={ e => {
-              this.setState({timeInterval: e.target.value, historical: null}, this.fetchHistorical);
+              this.setState({
+                timeInterval: e.target.value,
+                historical: null}, this.fetchHistorical
+              );
             } }
           >
             <option value="days">Days</option>
             <option value="weeks">Weeks</option>
             <option value="months">Months</option>
           </ChartSelect>
-          {this.state.historical ? (
-            <ReactHighcharts config={highchartsConfig.call(this)} />
+          { this.state.historical ? (
+            <ReactHighcharts config={ highchartsConfig.call(this) }/>
           ) : (
             <div> Loading historical data </div>
-          )}
+          ) }
         </PaddingBlue>
       </>
       }

@@ -64,23 +64,29 @@ class App extends Component {
     });
   }
 
+  validateFavorites = (coinList) => {
+    const validatedFavorites = [];
+    this.state.favorites.forEach(favorite => {
+      if (coinList[favorite]) {
+        validatedFavorites.push(favorite);
+      }
+    });
+    return validatedFavorites;
+  };
+
   fetchCoins = async () => {
     let coinList = (await cc.coinList()).Data;
     this.setState({
       coinList,
+      favorites: this.validateFavorites(coinList),
       fetched: true,
     });
   };
 
   fetchPrices = async () => {
     if (this.state.firstVisit) return;
-    let prices;
-    try {
-      prices = await this.prices();
-    } catch (e) {
-      this.setState({error: true});
-    }
-    this.setState({prices});
+    let prices = await this.prices();
+    this.setState({ prices });
   };
 
   prices = async () => {
