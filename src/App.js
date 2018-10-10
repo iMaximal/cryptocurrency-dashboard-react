@@ -73,6 +73,7 @@ class App extends Component {
   };
 
   fetchPrices = async () => {
+    if (this.state.firstVisit) return;
     let prices;
     try {
       prices = await this.prices();
@@ -180,6 +181,7 @@ class App extends Component {
         <div>Loading Coins</div>
       );
     }
+
     if (!this.state.firstVisit && !this.state.prices) {
       return (<div>Loading Prices</div>);
     }
